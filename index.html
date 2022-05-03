@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Animo CCG Viewer</title>
+
+  <link href="style/main.css" rel="stylesheet" type="text/css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- <link href="favicon.ico" rel="shortcut icon"> -->
+  <link rel="icon" 
+      type="image/png" 
+      href="favicon.ico">
+  <link href="meta/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="meta/apple-touch-startup-image-640x1096.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image">
+  <!-- iPhone 5+ -->
+  <link href="meta/apple-touch-startup-image-640x920.png" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)"
+    rel="apple-touch-startup-image">
+  <!-- iPhone, retina -->
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="black" name="apple-mobile-web-app-status-bar-style">
+  <meta content="True" name="HandheldFriendly">
+  <meta content="320" name="MobileOptimized">
+
+  <script src="https://use.fontawesome.com/8d1446c26f.js"></script>
+
+</head>
+
+<body ontouchstart="">
+  <div class="header">
+    <h1 id='siteHeading'>Redemption CCG Viewer</h1>
+  </div>
+
+  <div id='mainWrapper'>
+
+      <input id="cardFilterTextBox" class="filterTextBox" type="text" name="cardFilterTextBox" value="" />
+      <!-- &nbsp;<button id="filterNowButton">Filter</button> -->
+      &nbsp;<span id="shareLink"><a id="searchLink" href="">Link to this search</a></span>
+      <br />
+      <div id="filterEcho"></div>
+      <br />
+      <div id="resultList">
+        <div class="resultCard">
+        </div>
+      </div>
+  </div>
+
+  <div class="footer"></div>
+
+  <!-- Modal -->
+  <!-- The Modal -->
+  <!-- <div id="myMainModal" class="modal">
+    <div class="modal-content">
+      <span class="myMainModalClose">&nbsp;&times;
+      </span>
+      <div id='modalHeading'>&nbsp;</div>
+      <div id='modalMessage'>&nbsp;</div>
+    </div>
+  </div> -->
+  <!-- End Modal -->
+
+  <!-- jquery cloud reference -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+  <!-- Compressed -->
+  <script src="avmin.js"></script>
+</body>
+
+</html>

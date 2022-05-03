@@ -1,2 +1,2 @@
 # AnimoCCGViewer
-Animo CCG Card Viewer
+Card viewer for Animo CCG

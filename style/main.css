@@ -1,0 +1,34 @@
+
+body {
+	background: #3b3b39;
+	color: #cac8bf;
+}
+
+#siteHeading {
+	cursor: pointer;
+}
+
+.resultCard {
+	margin-bottom: 4px;
+}
+
+.resultCard img {
+	min-height: 100px;
+	min-width: 100px;
+	max-width: 95%;
+	border: 1px solid black;
+}
+
+#filterEcho {
+	display: none;
+}
+
+.filterTextBox {
+	margin: 0px 0px 8px 0px;
+	width: 90%;
+	max-width: 500px;
+}
+
+a {
+	color: #cac8bf;
+}
