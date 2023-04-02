@@ -219,6 +219,9 @@ function cardMatchesFilterText(card, filterText) {
 					case "W":
 						cardPartValue = card.jsonData.weakness;
 						break;
+					case "ATTRIBUTE":
+						cardPartValue = card.jsonData.attribute;
+						break;
 					case "VERSE":
 					case "REFERENCE":
 					case "REF":

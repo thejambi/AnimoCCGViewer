@@ -27,7 +27,9 @@ function Card(dataLine) {
 	this.jsonData.activationCost = this.dataParts[i++];
 	this.jsonData.abilityText = this.dataParts[i++];
 	this.jsonData.weakness = this.dataParts[i++];
+	this.jsonData.attribute = this.dataParts[i++];
 	this.jsonData.verseReference = this.dataParts[i++];
+	this.jsonData.verseText = this.dataParts[i++];
 	this.jsonData.artist = this.dataParts[i++];
 
 	if (this.jsonData.imgFile.includes(".jpg")) {
