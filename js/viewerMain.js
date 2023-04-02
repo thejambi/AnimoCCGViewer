@@ -175,68 +175,57 @@ function cardMatchesFilterText(card, filterText) {
 				switch (cardPartStr.toUpperCase()) {
 					case "NAME":
 					case "N":
-						cardPartValue = card.name;
+						cardPartValue = card.jsonData.name;
 						break;
 					case "SET":
 					case "S":
-						cardPartValue = card.set;
+						cardPartValue = card.jsonData.set;
 						break;
 					case "IMGFILE":
 					case "IF":
-						cardPartValue = card.imgFile;
+						cardPartValue = card.jsonData.imgFile;
 						break;
 					case "TYPE":
 					case "T":
-						cardPartValue = card.type;
+						cardPartValue = card.jsonData.cardType;
 						break;
-					case "BRIGADE":
-					case "B":
-						cardPartValue = card.brigade;
+					case "LEVEL":
+					case "LVL":
+					case "L":
+						cardPartValue = card.jsonData.level;
 						break;
-					case "STRENGTH":
+					case "KIND":
+					case "K":
+						cardPartValue = card.jsonData.powerKind;
+						break;
+					case "SCORE":
 					case "X/":
-						cardPartValue = card.strength;
+						cardPartValue = card.jsonData.virtueScoreOrSinnieDefense;
 						break;
-					case "TOUGHNESS":
-					case "/X":
-						cardPartValue = card.toughness;
+					case "FELLOWSHIP":
+					case "FK":
+						cardPartValue = card.jsonData.fellowshipKind;
 						break;
-					case "CLASS":
+					case "COST":
 					case "C":
-						cardPartValue = card.class;
-						break;
-					case "IDENTIFIER":
-					case "I":
-						cardPartValue = card.identifier;
+						cardPartValue = card.jsonData.activationCost;
 						break;
 					case "ABILITY":
 					case "A":
-						cardPartValue = card.specialAbility;
+						cardPartValue = card.jsonData.abilityText;
 						break;
-					case "RARITY":
-					case "R":
-						cardPartValue = card.rarity;
+					case "WEAKNESS":
+					case "WEAK":
+					case "W":
+						cardPartValue = card.jsonData.weakness;
 						break;
+					case "VERSE":
 					case "REFERENCE":
 					case "REF":
-						cardPartValue = card.reference;
+						cardPartValue = card.jsonData.verseReference;
 						break;
-					case "TESTAMENT":
-					case "TST":
-					case "TEST":
-						cardPartValue = card.testament;
-						break;
-					case "ALIGNMENT":
-						cardPartValue = card.alignment;
-						break;
-					case "LEGALITY":
-					case "L":
-						cardPartValue = card.legality;
-						if (matchValueStr === "R") {
-							matchValueStr = "ROTATION";
-						} else if (matchValueStr === "B") {
-							matchValueStr = "BANNED";
-						}
+					case "ARTIST":
+						cardPartValue = card.jsonData.artist;
 						break;
 					default:
 						break;
