@@ -38,6 +38,8 @@ function Card(dataLine) {
 }
 
 Card.prototype.getResultListDiv = function() {
+	var imageUrl = cardImageBaseUrl + this.jsonData.imgFile + ".jpg";
+
 	var theDiv = document.createElement("div");
 	theDiv.classList.add("resultCard");
 
@@ -45,11 +47,22 @@ Card.prototype.getResultListDiv = function() {
 	if (debugOn) {
 		nameDiv.style["font-weight"] = "bold";
 	}
+	nameDiv.style["width"] = "95%";
+	nameDiv.style["max-width"] = "477px";
 	nameDiv.innerText = this.jsonData.name;
+
+	var copyImageLinkButton = document.createElement("button");
+	copyImageLinkButton.style["float"] = "right";
+	copyImageLinkButton.innerText = "Copy Image Link";
+	copyImageLinkButton.onclick = (e) => {
+		copyTextToClipboard(imageUrl, copyImageLinkButton);
+	};
+	nameDiv.appendChild(copyImageLinkButton);
+
 	theDiv.appendChild(nameDiv);
 
 	var theImg = document.createElement("img");
-	theImg.src = cardImageBaseUrl + this.jsonData.imgFile + ".jpg";
+	theImg.src = imageUrl;
 	theImg.alt = this.jsonData.name;
 	theImg.title = this.jsonData.name;
 	theDiv.appendChild(theImg);
