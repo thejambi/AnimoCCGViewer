@@ -37,11 +37,14 @@ function Card(dataLine) {
 	}
 }
 
-Card.prototype.getResultListDiv = function() {
+Card.prototype.getResultListDiv = function(shouldBuildImageNow) {
 	var imageUrl = cardImageBaseUrl + this.jsonData.imgFile + ".jpg";
 
 	var theDiv = document.createElement("div");
 	theDiv.classList.add("resultCard");
+	if (!shouldBuildImageNow) {
+		theDiv.classList.add(nameOnlyClass);
+	}
 
 	var nameDiv = document.createElement("div");
 	if (debugOn) {
@@ -53,6 +56,7 @@ Card.prototype.getResultListDiv = function() {
 
 	var copyImageLinkButton = document.createElement("button");
 	copyImageLinkButton.style["float"] = "right";
+	copyImageLinkButton.style["display"] = "none";
 	copyImageLinkButton.innerText = "Copy Image Link";
 	copyImageLinkButton.onclick = (e) => {
 		copyTextToClipboard(imageUrl, copyImageLinkButton);
@@ -61,19 +65,41 @@ Card.prototype.getResultListDiv = function() {
 
 	theDiv.appendChild(nameDiv);
 
-	var theImg = document.createElement("img");
-	theImg.src = imageUrl;
-	theImg.alt = this.jsonData.name;
-	theImg.title = this.jsonData.name;
-	theDiv.appendChild(theImg);
+	if (shouldBuildImageNow) {
+		var theImg = this.buildImageElement(imageUrl, copyImageLinkButton);
+		theDiv.appendChild(theImg);
+	} else {
+		theDiv.onclick = (e) => {
+			var theImg = this.buildImageElement(imageUrl, copyImageLinkButton);
+			theDiv.appendChild(theImg);
 
-	if (debugOn) {
+			if (debugOn) {
+				theDiv.appendChild(this.buildCardInfoElement());
+			}
+
+			theDiv.onclick = null;
+			theDiv.classList.remove(nameOnlyClass);
+		};
+	}
+
+	if (debugOn && shouldBuildImageNow) {
 		theDiv.appendChild(this.buildCardInfoElement());
 	}
 
 	this.addDoubleClickToCardDiv(theDiv);
 
 	return theDiv;
+};
+
+Card.prototype.buildImageElement = function(imageUrl, copyImageLinkButton) {
+	var theImg = document.createElement("img");
+	theImg.src = imageUrl;
+	theImg.alt = this.jsonData.name;
+	theImg.title = this.jsonData.name;
+	theImg.onclick = (e) => {
+		copyImageLinkButton.style["display"] = "";
+	};
+	return theImg;
 };
 
 Card.prototype.buildCardInfoElement = function() {
@@ -84,35 +110,35 @@ Card.prototype.buildCardInfoElement = function() {
 };
 
 Card.prototype.getNameOnlyDiv = function() {
-	var theDiv = document.createElement("div");
-	theDiv.classList.add("resultCard");
-	theDiv.classList.add(nameOnlyClass);
+	// var theDiv = document.createElement("div");
+	// theDiv.classList.add("resultCard");
+	// theDiv.classList.add(nameOnlyClass);
 
-	var nameDiv = document.createElement("div");
-	if (debugOn) {
-		nameDiv.style["font-weight"] = "bold";
-	}
-	nameDiv.innerText = this.jsonData.name;
-	theDiv.appendChild(nameDiv);
+	// var nameDiv = document.createElement("div");
+	// if (debugOn) {
+	// 	nameDiv.style["font-weight"] = "bold";
+	// }
+	// nameDiv.innerText = this.jsonData.name;
+	// theDiv.appendChild(nameDiv);
 
-	theDiv.onclick = (e) => {
-		var theImg = document.createElement("img");
-		theImg.src = cardImageBaseUrl + this.jsonData.imgFile + ".jpg";
-		theImg.alt = this.jsonData.name;
-		theImg.title = this.jsonData.name;
-		theDiv.appendChild(theImg);
+	// theDiv.onclick = (e) => {
+	// 	var theImg = document.createElement("img");
+	// 	theImg.src = cardImageBaseUrl + this.jsonData.imgFile + ".jpg";
+	// 	theImg.alt = this.jsonData.name;
+	// 	theImg.title = this.jsonData.name;
+	// 	theDiv.appendChild(theImg);
 
-		if (debugOn) {
-			theDiv.appendChild(this.buildCardInfoElement());
-		}
+	// 	if (debugOn) {
+	// 		theDiv.appendChild(this.buildCardInfoElement());
+	// 	}
 
-		theDiv.onclick = null;
-		theDiv.classList.remove(nameOnlyClass);
-	};
+	// 	theDiv.onclick = null;
+	// 	theDiv.classList.remove(nameOnlyClass);
+	// };
 
-	this.addDoubleClickToCardDiv(theDiv);
+	// this.addDoubleClickToCardDiv(theDiv);
 
-	return theDiv;
+	// return theDiv;
 };
 
 Card.prototype.addDoubleClickToCardDiv = function(theDiv) {

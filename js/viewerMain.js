@@ -144,9 +144,9 @@ function filterCards() {
 		var card = resultCards[i];
 		if (i < 5) {
 			debug(card);
-			resultList.appendChild(card.getResultListDiv());
+			resultList.appendChild(card.getResultListDiv(true));
 		} else {
-			resultList.appendChild(card.getNameOnlyDiv());
+			resultList.appendChild(card.getResultListDiv(false));
 		}
 	}
 
