@@ -31,6 +31,7 @@ function Card(dataLine) {
 	this.jsonData.verseReference = this.dataParts[i++];
 	this.jsonData.verseText = this.dataParts[i++];
 	this.jsonData.artist = this.dataParts[i++];
+	this.jsonData.errata = this.dataParts[i++];
 
 	if (this.jsonData.imgFile.includes(".jpg")) {
 		this.jsonData.imgFile = this.jsonData.imgFile.replace(".jpg","");
@@ -68,6 +69,10 @@ Card.prototype.getResultListDiv = function(shouldBuildImageNow) {
 	if (shouldBuildImageNow) {
 		var theImg = this.buildImageElement(imageUrl, copyImageLinkButton);
 		theDiv.appendChild(theImg);
+		if (this.jsonData.errata && this.jsonData.errata.length > 0) {
+			var errataDiv = this.buildErrataDiv();
+			theDiv.appendChild(errataDiv);
+		}
 	} else {
 		theDiv.onclick = (e) => {
 			var theImg = this.buildImageElement(imageUrl, copyImageLinkButton);
@@ -79,6 +84,11 @@ Card.prototype.getResultListDiv = function(shouldBuildImageNow) {
 
 			theDiv.onclick = null;
 			theDiv.classList.remove(nameOnlyClass);
+
+			if (this.jsonData.errata && this.jsonData.errata.length > 0) {
+				var errataDiv = this.buildErrataDiv();
+				theDiv.appendChild(errataDiv);
+			}
 		};
 	}
 
@@ -89,6 +99,13 @@ Card.prototype.getResultListDiv = function(shouldBuildImageNow) {
 	this.addDoubleClickToCardDiv(theDiv);
 
 	return theDiv;
+};
+
+Card.prototype.buildErrataDiv = function() {
+	var errataDiv = document.createElement("div");
+	errataDiv.style["font-style"] = "italic";
+	errataDiv.innerText = "Errata: " + this.jsonData.errata;
+	return errataDiv;
 };
 
 Card.prototype.buildImageElement = function(imageUrl, copyImageLinkButton) {

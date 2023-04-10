@@ -230,6 +230,10 @@ function cardMatchesFilterText(card, filterText) {
 					case "ARTIST":
 						cardPartValue = card.jsonData.artist;
 						break;
+					case "ERRATA":
+					case "ERR":
+						cardPartValue = card.jsonData.errata;
+						break;
 					default:
 						break;
 				}
