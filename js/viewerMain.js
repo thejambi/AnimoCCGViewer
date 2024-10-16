@@ -19,6 +19,9 @@ var baseUrl;
 var localStorage;
 var cardList = [];
 
+var cardsPerPage = 10; // Number of cards to load per scroll
+var loadedCards = 0; // Counter to track how many cards are loaded so far
+
 window.requestAnimationFrame(function() {
 	cardFilterTextBox = document.getElementById("cardFilterTextBox");
 	resultList = document.getElementById("resultList");
@@ -136,20 +139,49 @@ function filterCards() {
 	}
 
 	debug("--- Filter Results ---");
-	// clear resultList
-	while (resultList.lastChild) {
-		resultList.removeChild(resultList.lastChild);
-	}
-	for (var i in resultCards) {
-		var card = resultCards[i];
-		if (i < 5) {
-			debug(card);
-			resultList.appendChild(card.getResultListDiv(true));
-		} else {
-			resultList.appendChild(card.getResultListDiv(false));
+	
+	// // clear resultList
+	// while (resultList.lastChild) {
+	// 	resultList.removeChild(resultList.lastChild);
+	// }
+	// for (var i in resultCards) {
+	// 	var card = resultCards[i];
+	// 	if (i < 5) {
+	// 		debug(card);
+	// 		resultList.appendChild(card.getResultListDiv(true));
+	// 	} else {
+	// 		resultList.appendChild(card.getResultListDiv(false));
+	// 	}
+	// }
+
+	// Initialize the scroll loading
+	loadedCards = 0;
+	resultList.innerHTML = ''; // Clear the current list
+	loadMoreCards(resultCards);
+
+	// Set up infinite scrolling
+	window.onscroll = function() {
+		if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+			loadMoreCards(resultCards);
 		}
+	};
+}
+
+// Function to load more cards
+function loadMoreCards(resultCards) {
+	var end = loadedCards + cardsPerPage;
+	for (var i = loadedCards; i < end && i < resultCards.length; i++) {
+		var card = resultCards[i];
+		resultList.appendChild(card.getResultListDiv(true));
+	}
+	loadedCards += cardsPerPage;
+
+	// Stop scroll event listener if all cards are loaded
+	if (loadedCards >= resultCards.length) {
+		window.onscroll = null;
 	}
 
+	// Show about text when no search results
 	if (resultCards.length === 0) {
 		resultList.appendChild(getAboutDiv());
 	}
@@ -280,13 +312,13 @@ function toggleLocalTesting() {
 	loadCardListText();
 }
 
-function revealMoreCards() {
-	var moreCards = resultList.children;
-	var numRevealed = 0;
-	for (var i = 0; i < moreCards.length && numRevealed < 5; i++) {
-		if (moreCards[i].classList.contains(nameOnlyClass)) {
-			moreCards[i].click();
-			numRevealed++;
-		}
-	}
-}
+// function revealMoreCards() {
+// 	var moreCards = resultList.children;
+// 	var numRevealed = 0;
+// 	for (var i = 0; i < moreCards.length && numRevealed < 5; i++) {
+// 		if (moreCards[i].classList.contains(nameOnlyClass)) {
+// 			moreCards[i].click();
+// 			numRevealed++;
+// 		}
+// 	}
+// }

@@ -96,7 +96,7 @@ Card.prototype.getResultListDiv = function(shouldBuildImageNow) {
 		theDiv.appendChild(this.buildCardInfoElement());
 	}
 
-	this.addDoubleClickToCardDiv(theDiv);
+	// this.addDoubleClickToCardDiv(theDiv);
 
 	return theDiv;
 };
@@ -158,11 +158,11 @@ Card.prototype.getNameOnlyDiv = function() {
 	// return theDiv;
 };
 
-Card.prototype.addDoubleClickToCardDiv = function(theDiv) {
-	theDiv.ondblclick = function(e) {
-		revealMoreCards();
-	};
-};
+// Card.prototype.addDoubleClickToCardDiv = function(theDiv) {
+// 	theDiv.ondblclick = function(e) {
+// 		revealMoreCards();
+// 	};
+// };
 
 Card.prototype.toString = function() {
 	return JSON.stringify(this);
