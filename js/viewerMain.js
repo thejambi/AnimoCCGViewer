@@ -1,26 +1,32 @@
-/* Animo CCG Viewer Main */
+import { LocalStorage } from './LocalStorage';
+import { Card } from './Card';
+import {
+	LZString,
+	QueryString,
+	setDebugOn,
+	compressSearchForShareLink,
+	debug,
+} from './viewerData';
 
-var cardDataUrl = "https://raw.githubusercontent.com/thejambi/AnimoLackeyCCG/main/sets/carddata.txt";
-var cardImageBaseUrl = "https://raw.githubusercontent.com/thejambi/AnimoLackeyCCG/main/sets/setimages/general/";
+let cardDataUrl = "https://raw.githubusercontent.com/thejambi/AnimoLackeyCCG/main/sets/carddata.txt";
+let cardImageBaseUrl = "https://raw.githubusercontent.com/thejambi/AnimoLackeyCCG/main/sets/setimages/general/";
 
 /* For Testing: */
-var cardDataUrlPrev = "file:///Users/zach/Programming/GitHub/RedemptionLackeyCCG/RedemptionQuick/sets/carddata.txt";
-var cardImageBaseUrlPrev = "file:///Users/zach/Programming/GitHub/RedemptionLackeyCCG/RedemptionQuick/sets/setimages/general/";
+let cardDataUrlPrev = "file:///Users/zach/Programming/GitHub/RedemptionLackeyCCG/RedemptionQuick/sets/carddata.txt";
+let cardImageBaseUrlPrev = "file:///Users/zach/Programming/GitHub/RedemptionLackeyCCG/RedemptionQuick/sets/setimages/general/";
 /* --- */
 
-var nameOnlyClass = "nameOnly";
+let cardListText = "";
+let cardFilterTextBox;
+let filterEchoDiv;
+let resultList;
+let searchLinkTag;
+let baseUrl;
+let localStorage;
+let cardList = [];
 
-var cardListText = "";
-var cardFilterTextBox;
-var filterEchoDiv;
-var resultList;
-var searchLinkTag;
-var baseUrl;
-var localStorage;
-var cardList = [];
-
-var cardsPerPage = 10; // Number of cards to load per scroll
-var loadedCards = 0; // Counter to track how many cards are loaded so far
+const cardsPerPage = 10; // Number of cards to load per scroll
+let loadedCards = 0; // Counter to track how many cards are loaded so far
 
 window.requestAnimationFrame(function() {
 	cardFilterTextBox = document.getElementById("cardFilterTextBox");
@@ -43,6 +49,23 @@ window.requestAnimationFrame(function() {
 		window.location.href = baseUrl;
 	};
 
+	document.getElementById("toggleFilterMenuButton").onclick = function() {
+		toggleFilterMenu();
+	};
+
+	document.querySelectorAll('.filterInput').forEach(input => {
+		input.addEventListener('input', applyFilter);
+		input.addEventListener('change', applyFilter);
+	});
+
+	document.getElementById("addFilterButton").onclick = function() {
+		addAdditionalFilter();
+	};
+
+	document.getElementById("clearFiltersButton").onclick = function() {
+		clearFilters();
+	};
+
 	searchLinkTag.href = window.location.href;
 
 	cardFilterChanged();
@@ -57,7 +80,7 @@ function prepareCardFilterTextBox() {
 		cardFilterChanged();
 	};
 	cardFilterTextBox.onkeypress = function(e){
-		var code = (e.keyCode ? e.keyCode : e.which);
+		const code = (e.keyCode ? e.keyCode : e.which);
 		 if(code == 13) {
 		   cardFilterChanged();
 		 }
@@ -68,22 +91,23 @@ function loadCardListText() {
 	$.get(cardDataUrl, function(data) {
 		cardListText = data;
 		processCardList();
+		populateDropdowns();
 	});
 }
 
 function processCardList() {
-	var lines = cardListText.split("\n");
+	const lines = cardListText.split("\n");
 	cardList = [];
-	for (var i in lines) {
-		var line = lines[i];
+	for (const i in lines) {
+		const line = lines[i];
 		if (i > 0 && line && line.trim() !== "") {
 			cardList.push(new Card(line));
 		}
 	}
 }
 
-var timeoutId;
-var filterTimeoutWait = 600;
+let timeoutId;
+const filterTimeoutWait = 600;
 function cardFilterChanged() {
 	clearTimeout(timeoutId);
 	debug("timeout cleared");
@@ -94,36 +118,36 @@ function cardFilterChanged() {
 }
 
 function updateSearchLinkTag() {
-	var urlParams = "f=" + encodeURIComponent(cardFilterTextBox.value.trim());
+	let urlParams = "f=" + encodeURIComponent(cardFilterTextBox.value.trim());
 	if (compressSearchForShareLink) {
 		urlParams = LZString.compressToEncodedURIComponent(urlParams);
 	}
 	searchLinkTag.href = baseUrl + "?" + urlParams;
 }
 
-var requiredFilterLength = 3;
-var applyDeckSort = false;
+const requiredFilterLength = 3;
+let applyDeckSort = false;
 function filterCards() {
-	var filterTextFull = cardFilterTextBox.value.trim().toUpperCase();
+	const filterTextFull = cardFilterTextBox.value.trim().toUpperCase();
 	filterEchoDiv.innerText = filterTextFull;
 	
-	var filterTextList = filterTextFull.split(";");
+	const filterTextList = filterTextFull.split(";");
 	debug(filterTextList);
 
-	var resultCards = [];
+	const resultCards = [];
 
-	for (var i in cardList) {
-		var card = cardList[i];
+	for (const i in cardList) {
+		const card = cardList[i];
 		if (!resultCards.includes(card)) {
-			for (var filterTextIndex in filterTextList) {
-				var filterText = filterTextList[filterTextIndex];
+			for (const filterTextIndex in filterTextList) {
+				const filterText = filterTextList[filterTextIndex];
 				if ("SORT:DECK" === filterText) {
 					applyDeckSort = true;
 				}
 				if ("DEBUG:ON" === filterText) {
-					debugOn = true;
+					setDebugOn(true);
 				} else if ("DEBUG:OFF" === filterText) {
-					debugOn = false;
+					setDebugOn(false);
 				}
 				if (filterText.length >= requiredFilterLength
 						&& cardMatchesFilterText(card, filterText)) {
@@ -140,20 +164,6 @@ function filterCards() {
 
 	debug("--- Filter Results ---");
 	
-	// // clear resultList
-	// while (resultList.lastChild) {
-	// 	resultList.removeChild(resultList.lastChild);
-	// }
-	// for (var i in resultCards) {
-	// 	var card = resultCards[i];
-	// 	if (i < 5) {
-	// 		debug(card);
-	// 		resultList.appendChild(card.getResultListDiv(true));
-	// 	} else {
-	// 		resultList.appendChild(card.getResultListDiv(false));
-	// 	}
-	// }
-
 	// Initialize the scroll loading
 	loadedCards = 0;
 	resultList.innerHTML = ''; // Clear the current list
@@ -169,10 +179,10 @@ function filterCards() {
 
 // Function to load more cards
 function loadMoreCards(resultCards) {
-	var end = loadedCards + cardsPerPage;
-	for (var i = loadedCards; i < end && i < resultCards.length; i++) {
-		var card = resultCards[i];
-		resultList.appendChild(card.getResultListDiv(true));
+	const end = loadedCards + cardsPerPage;
+	for (let i = loadedCards; i < end && i < resultCards.length; i++) {
+		const card = resultCards[i];
+		resultList.appendChild(card.getResultListDiv(true, cardImageBaseUrl));
 	}
 	loadedCards += cardsPerPage;
 
@@ -188,22 +198,22 @@ function loadMoreCards(resultCards) {
 }
 
 function applyDeckSortToCardsList(cardList) {
-	points.sort(function(card1, card2) {
-		
+	cardList.sort(function(card1, card2) {
+		// Sorting logic here
 	});
 }
 
 function cardMatchesFilterText(card, filterText) {
-	var filterTextChunks = filterText.trim().split(",");
-	var chunkFound = false;
-	for (var chunkIndex in filterTextChunks) {
-		var filterTextChunk = filterTextChunks[chunkIndex].trim();
+	const filterTextChunks = filterText.trim().split(",");
+	let chunkFound = false;
+	for (const chunkIndex in filterTextChunks) {
+		const filterTextChunk = filterTextChunks[chunkIndex].trim();
 		if (filterTextChunk.includes(":")) {
-			var colonIndex = filterTextChunk.indexOf(":");
-			var cardPartStr = filterTextChunk.slice(0, colonIndex);
+			const colonIndex = filterTextChunk.indexOf(":");
+			const cardPartStr = filterTextChunk.slice(0, colonIndex);
 			if (filterTextChunk.length > colonIndex) {
-				var matchValueStr = filterTextChunk.slice(colonIndex + 1);
-				var cardPartValue = card.dataLine;
+				const matchValueStr = filterTextChunk.slice(colonIndex + 1);
+				let cardPartValue = card.dataLine;
 				switch (cardPartStr.toUpperCase()) {
 					case "NAME":
 					case "N":
@@ -287,23 +297,135 @@ function cardMatchesFilterText(card, filterText) {
 }
 
 function getAboutDiv() {
-	var theDiv = document.createElement("div");
+	const theDiv = document.createElement("div");
 	theDiv.innerHTML = "Search for cards based on name, set, ability, and more. Use <strong>,</strong> to add another criteria (so, search for <strong>n:Floraline,s:CT</strong> to find cards that match both \"Floraline\" in name and \"CT\" in set). Use <strong>;</strong> to add another search."
-		// + "<br /><p>You can also search certain parts of cards. Begin a part of your search with any of the following to search in that part of the card.</p><p>Name: (or N:) <br />Set: (or S:) <br />Type: (or T:) <br />Brigade: (or B:) <br />Strength: (or X/:) <br />Toughness: (or /X:) <br />Class: (or C:) <br />Identifier: (or I:) <br />Ability: (or A:) <br />Rarity: (or R:) <br />Reference: (or Ref:) <br />Alignment: <br />Legality (or L:) (r, rotation, b, banned) - see rotation legal cards with l:r<br />[Special filter] Testament: (or tst:) <i>OT</i> or <i>NT</i> ";
-		// + "<br />[Special sort] Sort:deck (Sort cards by type for a deck listing) "
 		+ "</p>";
-		// + "<p>Some examples... <br />Type:Dominant,Brigade:Good <br />Type:Hero,Ability:Lost Soul <br />ref:Kings 19</p>";
 	return theDiv;
 }
 
+function toggleFilterMenu() {
+	const filterMenu = document.getElementById("filterMenu");
+	if (filterMenu.classList.contains("show")) {
+		filterMenu.classList.remove("show");
+		setTimeout(() => {
+			filterMenu.style.display = "none";
+		}, 500);
+	} else {
+		filterMenu.style.display = "block";
+		setTimeout(() => {
+			filterMenu.classList.add("show");
+		}, 10);
+	}
+}
+
+function applyFilter() {
+	const filterName = document.getElementById("filterName").value.trim();
+	const filterAbility = document.getElementById("filterAbility").value.trim();
+	const filterSet = document.getElementById("filterSet").value.trim();
+	const filterType = document.getElementById("filterType").value.trim();
+	const filterKind = document.getElementById("filterKind").value.trim();
+	const filterLevel = document.getElementById("filterLevel").value.trim();
+
+	const filters = [];
+	if (filterName) filters.push("NAME:" + filterName);
+	if (filterAbility) filters.push("ABILITY:" + filterAbility);
+	if (filterSet) filters.push("SET:" + filterSet);
+	if (filterType) filters.push("TYPE:" + filterType);
+	if (filterKind) filters.push("KIND:" + filterKind);
+	if (filterLevel) filters.push("LEVEL:" + filterLevel);
+
+	let currentFilters = cardFilterTextBox.value.trim();
+	const lastSemiColonIndex = currentFilters.lastIndexOf(";");
+	if (lastSemiColonIndex !== -1) {
+		currentFilters = currentFilters.substring(0, lastSemiColonIndex + 1);
+	} else {
+		currentFilters = "";
+	}
+
+	if (filters.length > 0) {
+		cardFilterTextBox.value = currentFilters + filters.join(",");
+	} else {
+		cardFilterTextBox.value = currentFilters;
+	}
+	cardFilterChanged();
+}
+
+function addAdditionalFilter() {
+	const filterName = document.getElementById("filterName").value.trim();
+	const filterAbility = document.getElementById("filterAbility").value.trim();
+	const filterSet = document.getElementById("filterSet").value.trim();
+	const filterType = document.getElementById("filterType").value.trim();
+	const filterKind = document.getElementById("filterKind").value.trim();
+	const filterLevel = document.getElementById("filterLevel").value.trim();
+
+	const filters = [];
+	if (filterName) filters.push("NAME:" + filterName);
+	if (filterAbility) filters.push("ABILITY:" + filterAbility);
+	if (filterSet) filters.push("SET:" + filterSet);
+	if (filterType) filters.push("TYPE:" + filterType);
+	if (filterKind) filters.push("KIND:" + filterKind);
+	if (filterLevel) filters.push("LEVEL:" + filterLevel);
+
+	if (filters.length > 0) {
+		const currentFilters = cardFilterTextBox.value.trim();
+		if (currentFilters) {
+			cardFilterTextBox.value = currentFilters + ";" + filters.join(",");
+		} else {
+			cardFilterTextBox.value = filters.join(",");
+		}
+		cardFilterChanged();
+	}
+
+	// Clear the filter builder fields
+	document.getElementById("filterName").value = "";
+	document.getElementById("filterAbility").value = "";
+	document.getElementById("filterSet").value = "";
+	document.getElementById("filterType").value = "";
+	document.getElementById("filterKind").value = "";
+	document.getElementById("filterLevel").value = "";
+}
+
+function clearFilters() {
+	document.getElementById("filterName").value = "";
+	document.getElementById("filterAbility").value = "";
+	document.getElementById("filterSet").value = "";
+	document.getElementById("filterType").value = "";
+	document.getElementById("filterKind").value = "";
+	document.getElementById("filterLevel").value = "";
+	cardFilterTextBox.value = "";
+	cardFilterChanged();
+}
+
+function populateDropdowns() {
+	const sets = [...new Set(cardList.map(card => card.jsonData.set))].filter(Boolean).sort();
+	const types = [...new Set(cardList.map(card => card.jsonData.cardType))].filter(Boolean).sort();
+	const kinds = [...new Set(cardList.map(card => card.jsonData.powerKind))].filter(Boolean).sort();
+	const levels = [...new Set(cardList.map(card => card.jsonData.level))].filter(Boolean).sort();
+
+	populateDropdown("filterSet", sets);
+	populateDropdown("filterType", types);
+	populateDropdown("filterKind", kinds);
+	populateDropdown("filterLevel", levels);
+}
+
+function populateDropdown(elementId, options) {
+	const dropdown = document.getElementById(elementId);
+	options.forEach(option => {
+		const opt = document.createElement("option");
+		opt.value = option;
+		opt.innerText = option;
+		dropdown.appendChild(opt);
+	});
+}
+
 function toggleLocalTesting() {
-	debugOn = true;
+	setDebugOn(true);
 	
-	var newCardDataUrl = cardDataUrlPrev;
+	const newCardDataUrl = cardDataUrlPrev;
 	cardDataUrlPrev = cardDataUrl;
 	cardDataUrl = newCardDataUrl;
 
-	var newImageUrl = cardImageBaseUrlPrev;
+	const newImageUrl = cardImageBaseUrlPrev;
 	cardImageBaseUrlPrev = cardImageBaseUrl;
 	cardImageBaseUrl = newImageUrl;
 
@@ -311,14 +433,3 @@ function toggleLocalTesting() {
 	debug("Card Image Url: " + cardImageBaseUrl);
 	loadCardListText();
 }
-
-// function revealMoreCards() {
-// 	var moreCards = resultList.children;
-// 	var numRevealed = 0;
-// 	for (var i = 0; i < moreCards.length && numRevealed < 5; i++) {
-// 		if (moreCards[i].classList.contains(nameOnlyClass)) {
-// 			moreCards[i].click();
-// 			numRevealed++;
-// 		}
-// 	}
-// }

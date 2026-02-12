@@ -1,1 +1,4 @@
 .DS_Store
+package-lock.json
+.parcel-cache/
+node_modules/

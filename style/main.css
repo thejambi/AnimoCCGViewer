@@ -34,6 +34,33 @@ a {
 	color: #cac8bf;
 }
 
+.filterMenu {
+	max-height: 0;
+	overflow: hidden;
+	background-color: #2c2c2c;
+	padding: 0 10px;
+	border: 1px solid #444;
+	border-radius: 5px;
+	margin-bottom: 10px;
+	opacity: 0;
+	transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
+
+.filterMenu.show {
+	max-height: 500px;
+	opacity: 1;
+	padding: 10px;
+}
+
+.filterInput {
+	width: 100%;
+	margin-bottom: 10px;
+}
+
+#toggleFilterMenuButton {
+	margin-bottom: 10px;
+}
+
 pre {
     white-space: -moz-pre-wrap; /* Mozilla, supported since 1999 */
     white-space: -pre-wrap; /* Opera */

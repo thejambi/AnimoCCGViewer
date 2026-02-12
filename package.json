@@ -1,0 +1,28 @@
+{
+	"name": "animoviewer",
+	"version": "1.0.0",
+	"description": "Card viewer for Animo CCG",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "parcel index.html --open",
+		"build": "rimraf dist && parcel build index.html --public-url ./",
+		"deploy": "gh-pages -d dist",
+		"serve": "http-server dist",
+		"lint": "eslint ."
+	},
+	"browserslist": "defaults and supports async-functions",
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+			"eslint": "^7.32.0",
+			"eslint-config-airbnb-base": "^14.2.1",
+			"eslint-plugin-import": "^2.24.2",
+			"gh-pages": "^6.3.0",
+			"parcel": "^2.13.3",
+			"rimraf": "^3.0.2"
+	},
+	"dependencies": {
+		"lz-string": "^1.5.0"
+	}
+}
