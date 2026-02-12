@@ -1,12 +1,12 @@
-import { LocalStorage } from './LocalStorage';
-import { Card } from './Card';
+import { LocalStorage } from './LocalStorage.js';
+import { Card } from './Card.js';
 import {
 	LZString,
 	QueryString,
 	setDebugOn,
 	compressSearchForShareLink,
 	debug,
-} from './viewerData';
+} from './viewerData.js';
 
 let cardDataUrl = "https://raw.githubusercontent.com/thejambi/AnimoLackeyCCG/main/sets/carddata.txt";
 let cardImageBaseUrl = "https://raw.githubusercontent.com/thejambi/AnimoLackeyCCG/main/sets/setimages/general/";
@@ -421,8 +421,8 @@ function populateDropdown(elementId, options) {
 function toggleLocalTesting() {
 	setDebugOn(true);
 	
-	const newCardDataUrl = cardDataUrlPrev;
-	cardDataUrlPrev = cardDataUrl;
+	// const newCardDataUrl = cardDataUrlPrev;
+	// cardDataUrlPrev = cardDataUrl;
 	cardDataUrl = newCardDataUrl;
 
 	const newImageUrl = cardImageBaseUrlPrev;
